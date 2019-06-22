@@ -152,7 +152,7 @@ public class EventManager:IEventMgr
         {
             if (EventListerDict.ContainsKey(key))
             {
-                EventListerDict[key].Invoke(key,param);
+                EventListerDict[key].Invoke(param);
             }
             else
             {

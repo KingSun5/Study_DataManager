@@ -3,11 +3,11 @@ using UnityEngine;
 
 public class UserInfo : DataBase
 {
-
-	public string TestStr = "我就是我UserInfo";
-	private DataType _inDataType;
-
-
+	/// <summary>
+	/// 背包内金币数量
+	/// </summary>
+	public int CoinTotal;
+	
 	public override DataType InDataType
 	{
 		get { return DataType.UserInfo; }
@@ -15,7 +15,7 @@ public class UserInfo : DataBase
 
 	public override void OnInit()
 	{
-		Debug.Log("It is Ok");
+		CoinTotal = 100;
 	}
 
 	public override void Notify()
