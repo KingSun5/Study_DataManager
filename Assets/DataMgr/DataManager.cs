@@ -1,8 +1,4 @@
-﻿
-
-
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -21,6 +17,8 @@ public interface IDataMgr
 {
 
 	Dictionary<DataType, DataBase> EventListerDict { get; set; }//存储注册的信息
+	
+	Dictionary<DataType, DataEvent> EventMgrDict { get; set; }//存储绑定事件信息
 	
 	void AddDataWatch(DataType dataType,EventMgr eventMgr);//绑定更新方法
 	
@@ -57,6 +55,8 @@ public class DataManager:IDataMgr
 
 	public Dictionary<DataType, DataBase> EventListerDict { get; set; }
 	
+	public Dictionary<DataType,DataEvent> EventMgrDict { get; set; }
+
 	/// <summary>
 	/// 绑定数据类监听
 	/// </summary>
@@ -64,7 +64,26 @@ public class DataManager:IDataMgr
 	/// <param name="eventMgr"></param>
 	public void AddDataWatch(DataType dataType, EventMgr eventMgr)
 	{
-		EventManager.Instance.Register((int)dataType,eventMgr);
+		if (EventMgrDict==null)
+		{
+			EventMgrDict = new Dictionary<DataType, DataEvent>();
+		}
+		
+		if (EventMgrDict.ContainsKey(dataType))
+		{
+			//已存在该信息的刷新方法 先移除监听 绑定方法后重新监听
+			EventManager.Instance.UnRegister((int)dataType);
+			EventMgrDict[dataType].BindEvnt(eventMgr);
+			EventManager.Instance.Register((int)dataType,EventMgrDict[dataType].InstanceEvent);
+		}
+		else
+		{
+			//不存在该信息的刷新方法，需注册
+			var dataEvent = new DataEvent();
+			dataEvent.BindEvnt(eventMgr);
+			EventMgrDict.Add(dataType,dataEvent);
+			EventManager.Instance.Register((int)dataType,dataEvent.InstanceEvent);
+		}
 	}
 
 	/// <summary>
